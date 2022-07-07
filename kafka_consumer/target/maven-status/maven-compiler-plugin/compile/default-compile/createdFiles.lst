@@ -1,0 +1,4 @@
+com\example\consumer\KafkaConsumerSample.class
+com\example\consumer\ConsumerRecordHandler.class
+com\example\consumer\FileWritingRecordHandler.class
+ConsumerApplication.class

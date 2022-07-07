@@ -1,0 +1,5 @@
+com\example\producer\DemoCallback.class
+com\example\config\KafkaConfig.class
+com\example\producer\ProducerConfiguration.class
+ProducerApplication.class
+com\example\producer\KafkaProducerProperties.class
