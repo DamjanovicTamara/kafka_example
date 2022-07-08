@@ -20,7 +20,7 @@ import java.util.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class ConsumerApplicationTest {
+public class TestConsumerApplication {
 
     private final static String TEST_CONFIG_FILE = "/consumertest.properties";
     private  MockConsumer<String, String> mockConsumer;
@@ -42,7 +42,7 @@ public class ConsumerApplicationTest {
         consumerApplication= new KafkaConsumerSample(mockConsumer, recordsHandler, ex -> this.pollException = ex);
     }
     @Test
-    public void consumeMessagesFromTheTopic() throws Exception {
+    public void testConsumeMessagesFromTheTopic() throws Exception {
         //Given
         mockConsumer.schedulePollTask(() -> addTopicPartitionsAssignmentAndAddConsumerRecords(topic, mockConsumer, topicPartition));
         mockConsumer.schedulePollTask(consumerApplication::shutdown);
@@ -76,7 +76,7 @@ public class ConsumerApplicationTest {
 
 
     @Test
-    void exceptionIsHandledCorrectly_WhenSubscribeToTopicAndExceptionOccurs() {
+    void testExceptionIsHandledCorrectly_WhenSubscribeToTopicAndExceptionOccurs() {
         // GIVEN
         mockConsumer.schedulePollTask(() -> mockConsumer.setPollException(new KafkaException("poll exception")));
         mockConsumer.schedulePollTask(() -> mockConsumer.wakeup());//.());//stop());

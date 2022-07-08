@@ -18,10 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 
-public class ConsumerConnectionTest {
+public class TestConsumerConnection {
 
     @Test
-    void connectionSuccessful_WhenExecutingNewThread() throws InterruptedException{
+    void testSuccessfulConnection_WhenExecutingNewThread() throws InterruptedException{
         AtomicBoolean failed  = new AtomicBoolean(false);
 
         CountDownLatch latch = new CountDownLatch(1);
@@ -39,7 +39,7 @@ public class ConsumerConnectionTest {
 
     }
     @Test
-    void connectionFailed_WhenExecutingNewThread() throws InterruptedException{
+    void testFailedConnection_WhenExecutingNewThread() throws InterruptedException{
         AtomicBoolean failed  = new AtomicBoolean(true);
 
         CountDownLatch latch = new CountDownLatch(1);
@@ -57,13 +57,13 @@ public class ConsumerConnectionTest {
     }
 
     @Test
-    public void executeHookShutDown_WhenHookIsGiven() {
+    public void testExecuteHookShutDown_WhenHookIsGiven() {
         Thread printingHook = new Thread(() -> System.out.println("In the middle of a shutdown"));
         Runtime.getRuntime().addShutdownHook(printingHook);
     }
 
     @Test
-    public void throwException_WhenAddHookAndThreadAlreadyStarted() {
+    public void testThrowException_WhenAddHookAndThreadAlreadyStarted() {
         Thread longRunningHook = new Thread(() -> {
             try {
                 Thread.sleep(300);
@@ -77,7 +77,7 @@ public class ConsumerConnectionTest {
     }
 
     @Test
-    public void throwException_WhenHookAlreadyExists() {
+    public void testThrowException_WhenHookAlreadyExists() {
         Thread unfortunateHook = new Thread(() -> {});
         Runtime.getRuntime().addShutdownHook(unfortunateHook);
 
@@ -87,7 +87,7 @@ public class ConsumerConnectionTest {
     }
 
     @Test
-    public void removeAHook_WhenItIsAlreadyRegistered() {
+    public void testRemoveAHook_WhenItIsAlreadyRegistered() {
         Thread willNotRun = new Thread(() -> System.out.println("Won't run!"));
         Runtime.getRuntime().addShutdownHook(willNotRun);
 

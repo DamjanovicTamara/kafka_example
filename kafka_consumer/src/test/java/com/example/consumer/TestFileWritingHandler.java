@@ -13,12 +13,12 @@ import java.util.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class FileWritingHandlerTest {
+public class TestFileWritingHandler {
 
     private final static String TEST_CONFIG_FILE = "/consumertest.properties";
 
     @Test
-    public void fileWritten_WhenGivenPathAndMessagesAreConsumed() throws IOException {
+    public void testFileWritten_WhenGivenPathAndMessagesAreConsumed() throws IOException {
         final Properties testConsumerProps = KafkaConsumerSample.loadProperties(TEST_CONFIG_FILE);
         final String testFilePath = testConsumerProps.getProperty("file.path");
         try {
