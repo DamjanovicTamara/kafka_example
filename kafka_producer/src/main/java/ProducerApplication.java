@@ -16,9 +16,7 @@ public class ProducerApplication {
         Scanner sc= new Scanner(System.in);
         logger.info("Enter number of messages to send ");
         int messageCount= sc.nextInt();
-        boolean isAsync = false;
-
-        KafkaProducerProperties producerThread = new KafkaProducerProperties(TOPIC, isAsync,messageCount);
+        KafkaProducerProperties producerThread = new KafkaProducerProperties(TOPIC,messageCount);
         producerThread.start();
 
     }

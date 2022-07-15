@@ -21,8 +21,7 @@ public class KafkaProducerProperties  extends Thread{
 
     private static KafkaProducer<Integer, String> producer;
     private final String topic;
-    private final Boolean isAsync;
-    private  int sendMessageCount;
+    private final int sendMessageCount;
     Properties properties = loadProperties();
     private  Properties loadProperties() {
         Properties properties = new Properties();
@@ -34,28 +33,19 @@ public class KafkaProducerProperties  extends Thread{
         return properties;
     }
 
-    public KafkaProducerProperties(String topic, Boolean isAsync,int sendMessageCount) throws InterruptedException {
+    public KafkaProducerProperties(String topic,int sendMessageCount){
         this.topic = topic;
-        this.isAsync = isAsync;
         this.sendMessageCount = sendMessageCount;
-        //  Properties properties = loadProperties();
-        producer = new KafkaProducer<Integer, String>(properties);
-    }
-    public KafkaProducerProperties(String topic, Boolean isAsync) throws InterruptedException {
-        this.topic = topic;
-        this.isAsync = isAsync;
-        // Properties properties = loadProperties();
         producer = new KafkaProducer<Integer, String>(properties);
     }
 
     static void runProducer(final int sendMessageCount) throws InterruptedException {
-        //  final Producer<Long, String> producer = createProducer();
         int time = (int) System.currentTimeMillis();
         final CountDownLatch countDownLatch = new CountDownLatch(sendMessageCount);
         try {
             for (int index = time; index < time + sendMessageCount; index++) {
                 final ProducerRecord<Integer, String> record =
-                        new ProducerRecord<Integer, String>(KafkaConfig.TOPIC_NAME, index, "Hello this is a new message" + index);
+                        new ProducerRecord<>(KafkaConfig.TOPIC_NAME, index, "Hello this is a new message" + index);
                 producer.send(record, (metadata, exception) -> {
                     long elapsedTime = System.currentTimeMillis() - time;
                     if (metadata != null) {
