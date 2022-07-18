@@ -49,7 +49,7 @@ public class KafkaConsumerSample {
                 if(consumerRecords.isEmpty()) {
                     logger.info("Consumer : {}, Found no records", consumerProps.getProperty("group.id"));
                     keepConsuming=false;
-                    continue;
+                    continue;//here should be break
                 }
                 recordsHandler.process(consumerRecords);
                 consumerRecords.forEach(record->{
@@ -87,7 +87,7 @@ public class KafkaConsumerSample {
         InputStream input = KafkaConsumerSample.class.getResourceAsStream(fileName);
         props.load(input);
         try{
-            Objects.requireNonNull(input).close();
+            Objects.requireNonNull(input,"Properties file cannot be empty").close();
         }catch (NullPointerException e){
             throw new IOException("Properties file is empty, invalid or does not exist");
         }

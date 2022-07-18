@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class KafkaProducerProperties  extends Thread{
+public class KafkaProducerProperties extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaProducerProperties.class);
     public static final String KAFKA_SERVER_URL = "localhost";
@@ -23,7 +23,8 @@ public class KafkaProducerProperties  extends Thread{
     private final String topic;
     private final int sendMessageCount;
     Properties properties = loadProperties();
-    private  Properties loadProperties() {
+
+    private Properties loadProperties() {
         Properties properties = new Properties();
 
         properties.put("bootstrap.servers", KAFKA_SERVER_URL + ":" + KAFKA_SERVER_PORT);
@@ -33,10 +34,10 @@ public class KafkaProducerProperties  extends Thread{
         return properties;
     }
 
-    public KafkaProducerProperties(String topic,int sendMessageCount){
+    public KafkaProducerProperties(String topic, int sendMessageCount) {
         this.topic = topic;
         this.sendMessageCount = sendMessageCount;
-        producer = new KafkaProducer<Integer, String>(properties);
+        producer = new KafkaProducer<>(properties);
     }
 
     static void runProducer(final int sendMessageCount) throws InterruptedException {
@@ -49,7 +50,7 @@ public class KafkaProducerProperties  extends Thread{
                 producer.send(record, (metadata, exception) -> {
                     long elapsedTime = System.currentTimeMillis() - time;
                     if (metadata != null) {
-                        logger.info("Message key:{},message value:{} is sent to partition:{}, offset :{}, in :{} ms",record.key(),record.value(),metadata.partition(),metadata.offset(),elapsedTime);
+                        logger.info("Message key:{},message value:{} is sent to partition:{}, offset :{}, in :{} ms", record.key(), record.value(), metadata.partition(), metadata.offset(), elapsedTime);
                     } else {
                         exception.printStackTrace();
                     }
@@ -63,6 +64,7 @@ public class KafkaProducerProperties  extends Thread{
         }
 
     }
+
     public void run() {
         try {
             runProducer(sendMessageCount);

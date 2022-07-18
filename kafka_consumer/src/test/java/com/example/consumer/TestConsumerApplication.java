@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 
@@ -16,20 +17,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestConsumerApplication {
 
     private final static String TEST_CONFIG_FILE = "/consumertest.properties";
-    private  MockConsumer<String, String> mockConsumer;
-    private  KafkaConsumerSample consumerApplication;
+    private MockConsumer<String, String> mockConsumer;
+    private KafkaConsumerSample consumerApplication;
     private Throwable pollException;
     private String topic;
     private Properties testConsumerProps;
     private String testFilePath;
     private TopicPartition topicPartition;
+    private CountDownLatch countDownLatch;
 
     @BeforeEach
     public void onBefore() throws IOException {
@@ -39,8 +44,11 @@ public class TestConsumerApplication {
         final ConsumerRecordHandler<String, String> recordsHandler = new FileWritingRecordHandler(Paths.get(testFilePath));
         topicPartition = new TopicPartition(topic, 0);
         mockConsumer = new MockConsumer<>(OffsetResetStrategy.EARLIEST);
-        consumerApplication= new KafkaConsumerSample(mockConsumer, recordsHandler, ex -> this.pollException = ex);
+        consumerApplication = new KafkaConsumerSample(mockConsumer, recordsHandler, ex -> this.pollException = ex);
+        countDownLatch = new CountDownLatch(1);
+
     }
+
     @Test
     public void testConsumeMessagesFromTheTopic() throws Exception {
         //Given
@@ -54,7 +62,7 @@ public class TestConsumerApplication {
         assertThat(actualRecords, equalTo(expectedWords));
         //Fix and add this !
         Assertions.assertThat(actualRecords).isNotNull();
-      //  Assertions.assertThat(actualRecords.key()).isNull();
+        //  Assertions.assertThat(actualRecords.key()).isNull();
     }
 
     private void addTopicPartitionsAssignmentAndAddConsumerRecords(final String topic,
@@ -65,7 +73,7 @@ public class TestConsumerApplication {
         beginningOffsets.put(topicPartition, 0L);
         mockConsumer.rebalance(Collections.singletonList(topicPartition));
         mockConsumer.updateBeginningOffsets(beginningOffsets);
-        addConsumerRecords(mockConsumer,topic);
+        addConsumerRecords(mockConsumer, topic);
     }
 
     private void addConsumerRecords(final MockConsumer<String, String> mockConsumer, final String topic) {
@@ -87,11 +95,33 @@ public class TestConsumerApplication {
         mockConsumer.updateBeginningOffsets(startOffsets);
 
         // WHEN
-       consumerApplication.consumeMessages(testConsumerProps);
+        consumerApplication.consumeMessages(testConsumerProps);
 
         // THEN
         assertThat(pollException).isInstanceOf(KafkaException.class).hasMessage("poll exception");
         assertThat(mockConsumer.closed()).isTrue();
     }
 
+    @Test
+    void testExceptionIsThrownCorrectly_WhenPropertiesFileIsNotProvided() {
+
+        assertThatThrownBy(() -> KafkaConsumerSample.loadProperties(null))
+                .isInstanceOf(NullPointerException.class);
+        ;
+        assertDoesNotThrow(() -> KafkaConsumerSample.loadProperties(TEST_CONFIG_FILE));
+    }
+
+
+
+   /* @Test
+    public void whenExceptionThrown_thenAssertionSucceeds() {
+        Exception exception = assertThrows(NullPointerException.class, () -> {
+            KafkaConsumerSample.loadProperties("1");
+        });
+
+        String expectedMessage = "inStream parameter is null";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(actualMessage, expectedMessage);
+    }*/
 }
